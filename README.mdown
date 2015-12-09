@@ -1,7 +1,14 @@
-JSON Lint
-=========
+# JSON Lint for PHP [![Build Status](https://img.shields.io/travis/cmpayments/jsonlint.svg)](https://travis-ci.org/cmpayments/jsonlint)
+-----------------------------------------------------------------------------------------------------------------------------------------
 
-[![Build Status](https://secure.travis-ci.org/cmpayments/jsonlint.png)](https://travis-ci.org/cmpayments/jsonlint)
+![License](https://img.shields.io/packagist/l/cmpayments/jsonlint.svg)
+[![Latest Stable Version](https://img.shields.io/packagist/v/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
+[![Total Downloads](https://img.shields.io/packagist/dt/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
+[![Reference Status](https://www.versioneye.com/php/cmpayments:jsonlint/reference_badge.svg)](https://www.versioneye.com/php/cmpayments:jsonlint/references)
+
+JSON Lint for PHP checks a string for invalid or malformed JSON, control character error, incorrect encoding or just plain old syntax errors.
+It returns comprehensive feedback about the first error that occured in the string.
+It support both RFC 4627 and (it's supeceding) RFC 7159
 
 Usage
 -----
@@ -68,4 +75,4 @@ JSON Lint is licensed under the MIT License - see the LICENSE file for details
 Acknowledgements
 ----------------
 
-This library is a port of the JavaScript [jsonlint](https://github.com/Seldaek/jsonlint) library.
+This library is a port of both [Seldaek/jsonlint](https://github.com/Seldaek/jsonlint) and [zaach/jsonlint](https://github.com/zaach/jsonlint) librairies.
