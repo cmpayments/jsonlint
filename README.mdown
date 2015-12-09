@@ -7,7 +7,7 @@ Usage
 -----
 
 ```php
-use Seld\JsonLint\JsonParser;
+use CMPayments\JsonLint\JsonParser;
 
 $parser = new JsonParser();
     

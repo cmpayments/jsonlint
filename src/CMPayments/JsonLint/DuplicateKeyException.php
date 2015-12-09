@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Seld\JsonLint;
+namespace CMPayments\JsonLint;
 
 class DuplicateKeyException extends ParsingException
 {
