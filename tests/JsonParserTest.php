@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-use Seld\JsonLint\JsonParser;
-use Seld\JsonLint\ParsingException;
-use Seld\JsonLint\DuplicateKeyException;
+use CMPayments\JsonLint\JsonParser;
+use CMPayments\JsonLint\ParsingException;
+use CMPayments\JsonLint\DuplicateKeyException;
 
 class JsonParserTest extends PHPUnit_Framework_TestCase
 {
