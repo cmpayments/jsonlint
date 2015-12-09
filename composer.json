@@ -1,21 +1,21 @@
 {
-    "name": "seld/jsonlint",
+    "name": "CMPayments/jsonlint",
     "description": "JSON Linter",
     "keywords": ["json", "parser", "linter", "validator"],
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Jordi Boggiano",
-            "email": "j.boggiano@seld.be",
-            "homepage": "http://seld.be"
+            "name": "Boy Wijnmaalen",
+            "email": "boy.wijnmaalen@cmtelecom.com",
+            "homepage": "https://www.cmpayments.com"
         }
     ],
     "require": {
         "php": "^5.3 || ^7.0"
     },
     "autoload": {
-        "psr-4": { "Seld\\JsonLint\\": "src/Seld/JsonLint/" }
+        "psr-4": { "CMPayments\\JsonLint\\": "src/CMPayments/JsonLint/" }
     },
     "bin": ["bin/jsonlint"]
 }
