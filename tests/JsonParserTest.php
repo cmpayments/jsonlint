@@ -1,24 +1,39 @@
 <?php
 
-/*
- * This file is part of the JSON Lint package.
- *
- * (c) Jordi Boggiano <j.boggiano@seld.be>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 use CMPayments\JsonLint\JsonParser;
-use CMPayments\JsonLint\ParsingException;
-use CMPayments\JsonLint\DuplicateKeyException;
+use CMPayments\JsonLint\Exceptions\ParsingException;
+use CMPayments\JsonLint\Exceptions\DuplicateKeyException;
 
+/**
+ * Class JsonParserTest
+ */
 class JsonParserTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var array
+     */
     protected $json = array(
-        '42', '42.3', '0.3', '-42', '-42.3', '-0.3',
-        '2e1', '2E1', '-2e1', '-2E1', '2E+2', '2E-2', '-2E+2', '-2E-2',
-        'true', 'false', 'null', '""', '[]', '{}', '"string"',
+        '42',
+        '42.3',
+        '0.3',
+        '-42',
+        '-42.3',
+        '-0.3',
+        '2e1',
+        '2E1',
+        '-2e1',
+        '-2E1',
+        '2E+2',
+        '2E-2',
+        '-2E+2',
+        '-2E-2',
+        'true',
+        'false',
+        'null',
+        '""',
+        '[]',
+        '{}',
+        '"string"',
         '["a", "sdfsd"]',
         '{"foo":"bar", "bar":"baz", "":"buz"}',
         '{"":"foo", "_empty_":"bar"}',
@@ -43,6 +58,9 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(json_decode($input), $parser->parse($input));
     }
 
+    /**
+     * @return array
+     */
     public function provideValidStrings()
     {
         $strings = array();
@@ -99,7 +117,7 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
             $parser->parse('{"bar": "foo}');
             $this->fail('Invalid unterminated string should be detected');
         } catch (ParsingException $e) {
-            $this->assertContains('Invalid string, it appears you forgot to terminated the string, or attempted to write a multiline string which is invalid', $e->getMessage());
+            $this->assertContains('Invalid string, it appears you forgot to terminated the string, or attempted to write a multi line string which is invalid', $e->getMessage());
         }
     }
 
@@ -111,10 +129,11 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
 bar"}');
             $this->fail('Invalid multi-line string should be detected');
         } catch (ParsingException $e) {
-            $this->assertContains('Invalid string, it appears you forgot to terminated the string, or attempted to write a multiline string which is invalid', $e->getMessage());
+
+            $this->assertContains('Invalid string, it appears you forgot to terminated the string, or attempted to write a multi line string which is invalid', $e->getMessage());
         }
     }
-
+    
     public function testErrorAtBeginning()
     {
         $parser = new JsonParser();
@@ -128,6 +147,9 @@ bar"}');
         }
     }
 
+    /**
+     * @throws ParsingException
+     */
     public function testParsesMultiInARow()
     {
         $parser = new JsonParser();
@@ -136,6 +158,9 @@ bar"}');
         }
     }
 
+    /**
+     * @throws ParsingException
+     */
     public function testDetectsKeyOverrides()
     {
         $parser = new JsonParser();
@@ -150,6 +175,9 @@ bar"}');
         }
     }
 
+    /**
+     * @throws ParsingException
+     */
     public function testDetectsKeyOverridesWithEmpty()
     {
         $parser = new JsonParser();
@@ -164,47 +192,56 @@ bar"}');
         }
     }
 
+    /**
+     * @throws ParsingException
+     */
     public function testDuplicateKeys()
     {
         $parser = new JsonParser();
 
         $result = $parser->parse('{"a":"b", "a":"c", "a":"d"}', JsonParser::ALLOW_DUPLICATE_KEYS);
         $this->assertThat($result,
-            $this->logicalAnd(
-                $this->objectHasAttribute('a'),
-                $this->objectHasAttribute('a.1'),
-                $this->objectHasAttribute('a.2')
-            )
+                          $this->logicalAnd(
+                              $this->objectHasAttribute('a'),
+                              $this->objectHasAttribute('a.1'),
+                              $this->objectHasAttribute('a.2')
+                          )
         );
     }
 
+    /**
+     * @throws ParsingException
+     */
     public function testDuplicateKeysWithEmpty()
     {
         $parser = new JsonParser();
 
         $result = $parser->parse('{"":"a", "_empty_":"b"}', JsonParser::ALLOW_DUPLICATE_KEYS);
         $this->assertThat($result,
-            $this->logicalAnd(
-                $this->objectHasAttribute('_empty_'),
-                $this->objectHasAttribute('_empty_.1')
-            )
+                          $this->logicalAnd(
+                              $this->objectHasAttribute('_empty_'),
+                              $this->objectHasAttribute('_empty_.1')
+                          )
         );
     }
 
+    /**
+     * @throws ParsingException
+     */
     public function testParseToArray()
     {
         $parser = new JsonParser();
 
-        $json = '{"one":"a", "two":{"three": "four"}, "": "empty"}';
+        $json   = '{"one":"a", "two":{"three": "four"}, "": "empty"}';
         $result = $parser->parse($json, JsonParser::PARSE_TO_ASSOC);
         $this->assertSame(json_decode($json, true), $result);
     }
-
+    
     public function testFileWithBOM()
     {
         try {
             $parser = new JsonParser();
-            $parser->parse(file_get_contents(dirname(__FILE__) .'/bom.json'));
+            $parser->parse(file_get_contents(dirname(__FILE__) . '/bom.json'));
             $this->fail('BOM should be detected');
         } catch (ParsingException $e) {
             $this->assertContains('BOM detected', $e->getMessage());
