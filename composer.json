@@ -20,13 +20,12 @@
         "docs": "https://github.com/cmpayments/jsonlint/wiki"
     },
     "require": {
-        "php": "^5.3 || ^7.0"
+        "php": "^5.4 || ^7.0"
     },
     "suggest": {
         "phpunit/phpunit": "If PHP Unit is not globally installed on your system the tests will not run, install the PHP Unit package locally to run the tests"
     },
     "autoload": {
         "psr-4": { "CMPayments\\JsonLint\\": "src/CMPayments/JsonLint/" }
-    },
-    "bin": ["bin/jsonlint"]
+    }
 }

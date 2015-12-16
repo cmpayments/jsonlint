@@ -11,9 +11,11 @@
 class JsonLintException extends \ErrorException
 {
     const TEMPORARILY_UNAVAILABLE = 1;
+    const LEXICAL_ERROR           = 2;
 
     const MESSAGES = [
-        self::TEMPORARILY_UNAVAILABLE => 'This Service is temporarily unavailable'
+        self::TEMPORARILY_UNAVAILABLE => 'This Service is temporarily unavailable',
+        self::LEXICAL_ERROR           => 'Lexical error on line %d, unrecognized text'
     ];
 
     /**
@@ -22,9 +24,29 @@ class JsonLintException extends \ErrorException
     private $args = [];
 
     /**
-     * @var
+     * @var null
      */
-    private $description;
+    private $jsonLineNo = null;
+
+    /**
+     * @var null
+     */
+    private $jsonColumnNo = null;
+
+    /**
+     * @var null
+     */
+    private $jsonMatch = null;
+
+    /**
+     * @var null
+     */
+    private $jsonToken = null;
+
+    /**
+     * @var null
+     */
+    private $jsonExpected = null;
 
     /**
      * @return mixed
@@ -49,19 +71,107 @@ class JsonLintException extends \ErrorException
     }
 
     /**
-     * @return mixed
+     * @return null
      */
-    public function getDescription()
+    public function getJsonLineNo()
     {
-        return $this->description;
+        return $this->jsonLineNo;
     }
 
     /**
-     * @param mixed $description
+     * @param null $jsonLineNo
      */
-    public function setDescription($description)
+    public function setJsonLineNo($jsonLineNo)
     {
-        $this->description = $description;
+        $this->jsonLineNo = $jsonLineNo;
+    }
+
+    /**
+     * @return null
+     */
+    public function getJsonColumnNo()
+    {
+        return $this->jsonColumnNo;
+    }
+
+    /**
+     * @param null $jsonColumnNo
+     */
+    public function setJsonColumnNo($jsonColumnNo)
+    {
+        $this->jsonColumnNo = $jsonColumnNo;
+    }
+
+    /**
+     * @return null
+     */
+    public function getJsonMatch()
+    {
+        return $this->jsonMatch;
+    }
+
+    /**
+     * @param null $jsonMatch
+     */
+    public function setJsonMatch($jsonMatch)
+    {
+        $this->jsonMatch = $jsonMatch;
+    }
+
+    /**
+     * @return null
+     */
+    public function getJsonToken()
+    {
+        return $this->jsonToken;
+    }
+
+    /**
+     * @param null $jsonToken
+     */
+    public function setJsonToken($jsonToken)
+    {
+        $this->jsonToken = $jsonToken;
+    }
+
+    /**
+     * @return null
+     */
+    public function getJsonExpected()
+    {
+        return $this->jsonExpected;
+    }
+
+    /**
+     * @param null $jsonExpected
+     */
+    public function setJsonExpected($jsonExpected)
+    {
+        $this->jsonExpected = $jsonExpected;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllJsonDetails()
+    {
+        return [
+            'match'    => $this->getJsonMatch(),
+            'token'    => $this->getJsonToken(),
+            'line'     => $this->getJsonLineNo(),
+            'column'   => $this->getJsonColumnNo(),
+            'expected' => $this->getJsonExpected()
+        ];
+    }
+
+    /**
+     * Append the current message with some more text
+     *
+     * @param $appendingText
+     */
+    public function appendMessage($appendingText)
+    {
+        $this->message = $this->getMessage() . $appendingText;
     }
 
     /**
@@ -77,9 +187,6 @@ class JsonLintException extends \ErrorException
 
         // parent constructor
         parent::__construct($this->getStringFromConstArray('MESSAGES', $code, 'This service is temporarily unavailable'), $code);
-
-        // apply a description to the exception if one exists
-        $this->setDescription($this->getStringFromConstArray('DESCRIPTIONS', $code));
     }
 
     /**
@@ -101,10 +208,9 @@ class JsonLintException extends \ErrorException
             // PHP 5.6 is (for now) unable to check if array keys exist when this array is actually a (class) constant
             try {
 
-                $string = static::$$constName[$code];
-                $string = vsprintf($string, $this->getArgs());
-
-            } catch (\Exception $e) { /* do nothing */ }
+                $string = vsprintf(constant("static::$constName")[$code], $this->getArgs());
+            } catch (\Exception $e) { /* do nothing */
+            }
         }
 
         return $string;

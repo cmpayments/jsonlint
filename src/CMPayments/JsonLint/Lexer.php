@@ -1,5 +1,8 @@
 <?php namespace CMPayments\JsonLint;
 
+use CMPayments\JsonLint\Exceptions\JsonLintException;
+use CMPayments\JsonLint\Exceptions\UndefinedException;
+
 /**
  * Class Lexer
  *
@@ -41,18 +44,17 @@ class Lexer
      * @var
      */
     private $conditionStack;
+
     /**
      * @var
      */
     private $input;
-    /**
-     * @var
-     */
-    private $more;
+
     /**
      * @var
      */
     private $done;
+
     /**
      * @var
      */
@@ -62,31 +64,40 @@ class Lexer
      * @var
      */
     public $match;
+
     /**
      * @var
      */
     public $yLineNo;
+
+    /**
+     * @var
+     */
+    public $yColumnNo;
+
     /**
      * @var
      */
     public $yLength;
+
     /**
      * @var
      */
     public $yText;
+
     /**
      * @var
      */
     public $yLocation;
 
     /**
-     * @return Undefined|int|null|string
+     * @return UndefinedException|int|null|string
      */
     public function lex()
     {
         $r = $this->next();
 
-        if (!$r instanceof Undefined) {
+        if (!$r instanceof UndefinedException) {
 
             return $r;
         }
@@ -102,12 +113,11 @@ class Lexer
     public function setInput($input)
     {
         $this->input          = $input;
-        $this->more           = false;
         $this->done           = false;
-        $this->yLineNo       = $this->yLength = 0;
-        $this->yText         = $this->matched = $this->match = '';
+        $this->yLineNo        = $this->yLength = $this->yColumnNo = 0;
+        $this->yText          = $this->matched = $this->match = '';
         $this->conditionStack = ['INITIAL'];
-        $this->yLocation         = ['first_line' => 1, 'first_column' => 0, 'last_line' => 1, 'last_column' => 0];
+        $this->yLocation      = ['last_line' => 1, 'last_column' => 0];
 
         return $this;
     }
@@ -115,20 +125,9 @@ class Lexer
     /**
      * @return string
      */
-    public function showPosition()
-    {
-        $pre = str_replace("\n", '', $this->getPastInput());
-        $c   = str_repeat('-', max(0, strlen($pre) - 1));
-
-        return $pre . str_replace("\n", '', $this->getUpcomingInput()) . "\n" . $c . "^";
-    }
-
-    /**
-     * @return string
-     */
     public function getPastInput()
     {
-        $past = substr($this->matched, 0, strlen($this->matched) - strlen($this->match));
+        $past = substr($this->matched, 0, (strlen($this->matched) - strlen($this->yText)));
 
         return (strlen($past) > 20 ? '...' : '') . substr($past, -20);
     }
@@ -138,10 +137,9 @@ class Lexer
      */
     public function getUpcomingInput()
     {
-        $next = $this->match;
+        $next = $this->yText;
 
         if (strlen($next) < 20) {
-
             $next .= substr($this->input, 0, 20 - strlen($next));
         }
 
@@ -149,17 +147,7 @@ class Lexer
     }
 
     /**
-     * @param $str
-     *
-     * @throws \Exception
-     */
-    protected function parseError($str)
-    {
-        throw new \Exception($str);
-    }
-
-    /**
-     * @return Undefined|int|null|string
+     * @return UndefinedException|int|null|string
      * @throws \Exception
      */
     private function next()
@@ -174,16 +162,9 @@ class Lexer
             $this->done = true;
         }
 
-        $token = null;
-        $match = null;
-        $col   = null;
-        $lines = null;
+        $match = $col = $lines = null;
 
-        if (!$this->more) {
-
-            $this->yText = '';
-            $this->match  = '';
-        }
+        $this->yText = $this->match = '';
 
         $rules    = $this->getCurrentRules();
         $rulesLen = count($rules);
@@ -201,18 +182,18 @@ class Lexer
                 }
 
                 $this->yLocation = [
-                    'first_line'   => $this->yLocation['last_line'],
-                    'last_line'    => $this->yLineNo + 1,
-                    'first_column' => $this->yLocation['last_column'],
-                    'last_column'  => $lines ? strlen($lines[count($lines) - 1]) - 1 : $this->yLocation['last_column'] + strlen($match[0]),
+                    'last_line'   => $this->yLineNo + 1,
+                    'last_column' => $lines ? strlen($lines[count($lines) - 1]) - 1 : $this->yLocation['last_column'] + strlen($match[0]),
                 ];
 
+                preg_match('/[a-zA-Z0-9-_]+/', $this->input, $inputMatches);
+
                 $this->yText .= $match[0];
-                $this->match .= $match[0];
+                $this->match .= (empty($inputMatches) ? $match[0] : $inputMatches[0]);
                 $this->yLength = strlen($this->yText);
-                $this->more   = false;
-                $this->input  = substr($this->input, strlen($match[0]));
-                $this->matched .= $match[0];
+                $this->yColumnNo = $this->yLocation['last_column'];
+                $this->input   = substr($this->input, strlen($this->yText));
+                $this->matched .= $this->yText;
                 $token = $this->performAction($rules[$i]);
 
                 if ($token) {
@@ -220,7 +201,7 @@ class Lexer
                     return $token;
                 }
 
-                return new Undefined();
+                return new UndefinedException(UndefinedException::UNDEFINED_VALIDATION);
             }
         }
 
@@ -229,9 +210,7 @@ class Lexer
             return $this->EOF;
         }
 
-        $this->parseError('Lexical error on line ' . ($this->yLineNo + 1) . ". Unrecognized text.\n" . $this->showPosition());
-
-        return null;
+        throw new JsonLintException(JsonLintException::LEXICAL_ERROR, [($this->yLineNo + 1)]);
     }
 
     /**

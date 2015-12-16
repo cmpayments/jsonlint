@@ -20,19 +20,10 @@ $parser = new JsonParser();
 // returns null if it's valid json, or a ParsingException object.
 $parser->lint($json);
 
-// Call getMessage() on the exception object to get
-// a well formatted error message error like this
+// Call $parser->getMessage() on the exception object to get a well formatted error message error like this
+// **Expected one of: 'STRING', '}' when trying to match 'id' on line 2, column 9**
 
-// Parse error on line 2:
-// ... "key": "value"    "numbers": [1, 2, 3]
-// ----------------------^
-// Expected one of: 'EOF', '}', ':', ',', ']'
-
-// Call getDetails() on the exception to get more info.
-
-// returns parsed json, like json_decode() does, but slower, throws
-// exceptions on failure.
-$parser->parse($json);
+// Call $parser->getDetails() on the exception to get more info.
 ```
 
 Installation
@@ -56,6 +47,14 @@ Submitting bugs and feature requests
 ------------------------------------
 
 Bugs and feature request are tracked on [GitHub](https://github.com/cmpayments/jsonlint/issues)
+
+Todo
+----
+
+- [ ] Add support for keys without double quotes*
+
+*RFC 4627 states that an object is an unordered collection of zero or more key/value pairs, where a key is a string and a value is a string, number, boolean, null, object, or array.
+This JSON linter tends to be more lenient towards keys without quotes in order to accept request from a JavaScript frontend.
 
 Author
 ------
