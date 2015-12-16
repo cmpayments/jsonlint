@@ -5,20 +5,29 @@
  *
  * @package CMPayments\JsonLint\Exceptions
  */
-class DuplicateKeyException extends ParsingException
+class DuplicateKeyException extends JsonLintException
 {
-    /**
-     * DuplicateKeyException constructor.
-     *
-     * @param string $message
-     * @param array  $key
-     * @param array  $details
-     */
-    public function __construct($message, $key, array $details = [])
-    {
-        $details['key'] = $key;
+    const PARSE_ERROR_DUPLICATE_KEY = 1;
 
-        parent::__construct($message, $details);
+    const MESSAGES = [
+        self::PARSE_ERROR_DUPLICATE_KEY => 'Parse error on line %d, duplicate key: %s'
+    ];
+
+    private $key = null;
+
+    /**
+     * ApiException constructor.
+     *
+     * @param string $code
+     * @param array  $key
+     * @param array  $args
+     * @param null   $message
+     */
+    public function __construct($code, $key, $args = [], $message = null)
+    {
+        $this->key = $key;
+
+        parent::__construct($code, $args, $message);
     }
 
     /**
@@ -26,6 +35,6 @@ class DuplicateKeyException extends ParsingException
      */
     public function getKey()
     {
-        return $this->details['key'];
+        return $this->key;
     }
 }
