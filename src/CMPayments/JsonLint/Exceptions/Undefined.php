@@ -5,7 +5,7 @@
  *
  * @package CMPayments\JsonLint
  */
-class Undefined
+class Undefined extends
 {
 
 }
