@@ -258,7 +258,7 @@ class JsonParser
 
                     if (substr(trim($this->lexer->getPastInput()), -1) === ',') {
 
-                        $e->appendMessage(ParsingException::MESSAGES[ParsingException::APPEND_TRAILING_COMMA_ERROR], $this->getExceptionArguments($symbol));
+                        $e->appendMessage($e->getItemFromVariableArray(ParsingException::APPEND_TRAILING_COMMA_ERROR), $this->getExceptionArguments($symbol));
 
                         // usually we +1 the line number on which an error occurred to make it human readable
                         // BUT when it involves a trailing comma the error is located on the line above the current one

@@ -18,7 +18,7 @@ class ParsingException extends JsonLintException
     const PARSING_ERROR_MULTIPLE_ACTIONS      = 9;
     const BYTE_ORDER_MARK_DETECTED            = 10;
 
-    const MESSAGES = [
+    protected $messages = [
         self::NOT_A_STRING                        => 'Input is not a string but is of type: \'%s\'',
         self::INVALID_STRING                      => 'Invalid JSON on line %d at column %d',
         self::USED_SINGLE_QUOTES                  => 'You used single quotes instead of double quotes on line %d at column %d',

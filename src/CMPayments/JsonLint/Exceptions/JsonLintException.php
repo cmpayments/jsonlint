@@ -13,7 +13,7 @@ class JsonLintException extends \ErrorException
     const TEMPORARILY_UNAVAILABLE = 1;
     const LEXICAL_ERROR           = 2;
 
-    const MESSAGES = [
+    protected $messages = [
         self::TEMPORARILY_UNAVAILABLE => 'This Service is temporarily unavailable',
         self::LEXICAL_ERROR           => 'Lexical error on line %d, unrecognized text'
     ];
@@ -186,33 +186,33 @@ class JsonLintException extends \ErrorException
         $this->setArgs($args);
 
         // parent constructor
-        parent::__construct($this->getStringFromConstArray('MESSAGES', $code, 'This service is temporarily unavailable'), $code);
+        parent::__construct($this->getItemFromVariableArray($code, 'This service is temporarily unavailable'), $code);
     }
 
     /**
      * Retrieves a specific array key from a class constant
      *
-     * @param      $constName
-     * @param      $code
-     * @param null $default
+     * @param        $code
+     * @param null   $default
+     * @param string $msgArray
      *
      * @return null|string
      */
-    private function getStringFromConstArray($constName, $code, $default = null)
+    public function getItemFromVariableArray($code, $default = null, $msgArray = 'messages')
     {
-        $string = $default;
+        $messages = [];
+        if (isset($this->$msgArray)) {
 
-        // since this is an exception we cannot afford any new exceptions so we are extra careful
-        if (defined('static::' . $constName)) {
-
-            // PHP 5.6 is (for now) unable to check if array keys exist when this array is actually a (class) constant
-            try {
-
-                $string = vsprintf(constant("static::$constName")[$code], $this->getArgs());
-            } catch (\Exception $e) { /* do nothing */
-            }
+            $messages = $this->$msgArray;
         }
 
-        return $string;
+        // override because when the given code exists
+        if (isset($messages[$code])) {
+
+            $default = vsprintf($messages[$code], $this->getArgs());
+
+        }
+
+        return $default;
     }
 }
