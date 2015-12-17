@@ -9,7 +9,7 @@ class DuplicateKeyException extends JsonLintException
 {
     const PARSE_ERROR_DUPLICATE_KEY = 1;
 
-    const MESSAGES = [
+    protected $messages = [
         self::PARSE_ERROR_DUPLICATE_KEY => 'Parse error on line %d, duplicate key: %s'
     ];
 

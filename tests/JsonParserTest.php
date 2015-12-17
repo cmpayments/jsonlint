@@ -175,7 +175,7 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
         } catch (ParsingException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertContains(ParsingException::MESSAGES[ParsingException::APPEND_TRAILING_COMMA_ERROR], $e->getMessage(), 'Invalid trailing comma should be detected');
+            $this->assertContains($e->getItemFromVariableArray(ParsingException::APPEND_TRAILING_COMMA_ERROR), $e->getMessage(), 'Invalid trailing comma should be detected');
         }
     }
 
@@ -189,7 +189,7 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
         } catch (ParsingException $e) {
 
             $this->assertEquals(2, $e->getJsonLineNo());
-            $this->assertContains(ParsingException::MESSAGES[ParsingException::APPEND_TRAILING_COMMA_ERROR], $e->getMessage(), 'Invalid trailing comma should be detected');
+            $this->assertContains($e->getItemFromVariableArray(ParsingException::APPEND_TRAILING_COMMA_ERROR), $e->getMessage(), 'Invalid trailing comma should be detected');
         }
     }
 
