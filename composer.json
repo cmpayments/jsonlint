@@ -1,9 +1,10 @@
 {
     "name": "cmpayments/jsonlint",
-    "description": "JSON Linter",
-    "keywords": ["json", "parser", "linter", "validator"],
+    "description": "JSON Lint for PHP checks a string for invalid or malformed JSON, control character error, incorrect encoding or just plain old syntax errors",
+    "keywords": ["json", "php", "parser", "lint", "linter", "validator", "syntax check"],
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/cmpayments/jsonlint",
     "authors": [
         {
             "name": "Boy Wijnmaalen",
@@ -11,11 +12,20 @@
             "homepage": "https://www.cmpayments.com"
         }
     ],
+    "support": {
+        "email": "boy.wijnmaalen@cmtelecom.com",
+        "issues": "https://github.com/cmpayments/jsonlint/issues",
+        "wiki": "https://github.com/cmpayments/jsonlint/wiki",
+        "source": "https://github.com/cmpayments/jsonlint/releases",
+        "docs": "https://github.com/cmpayments/jsonlint/wiki"
+    },
     "require": {
-        "php": "^5.3 || ^7.0"
+        "php": "^5.4 || ^7.0"
+    },
+    "suggest": {
+        "phpunit/phpunit": "If PHP Unit is not globally installed on your system the tests will not run, install the PHP Unit package locally to run the tests"
     },
     "autoload": {
         "psr-4": { "CMPayments\\JsonLint\\": "src/CMPayments/JsonLint/" }
-    },
-    "bin": ["bin/jsonlint"]
+    }
 }
