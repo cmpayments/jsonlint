@@ -10,12 +10,12 @@
  */
 class JsonLintException extends \ErrorException
 {
-    const TEMPORARILY_UNAVAILABLE = 1;
-    const LEXICAL_ERROR           = 2;
+    const ERROR_TEMPORARILY_UNAVAILABLE = 1;
+    const ERROR_LEXICAL_ERROR           = 2;
 
     protected $messages = [
-        self::TEMPORARILY_UNAVAILABLE => 'This Service is temporarily unavailable',
-        self::LEXICAL_ERROR           => 'Lexical error on line %d, unrecognized text'
+        self::ERROR_TEMPORARILY_UNAVAILABLE => 'This Service is temporarily unavailable',
+        self::ERROR_LEXICAL_ERROR           => 'Lexical error on line %d, unrecognized text'
     ];
 
     /**
@@ -192,7 +192,7 @@ class JsonLintException extends \ErrorException
     /**
      * Retrieves a specific array key from a class constant
      *
-     * @param        $code
+     * @param int    $code
      * @param null   $default
      * @param string $msgArray
      *
@@ -210,7 +210,6 @@ class JsonLintException extends \ErrorException
         if (isset($messages[$code])) {
 
             $default = vsprintf($messages[$code], $this->getArgs());
-
         }
 
         return $default;

@@ -106,7 +106,7 @@ class Lexer
     }
 
     /**
-     * @param $input
+     * @param string $input
      *
      * @return $this
      */
@@ -201,7 +201,7 @@ class Lexer
                     return $token;
                 }
 
-                return new UndefinedException(UndefinedException::UNDEFINED_VALIDATION);
+                return new UndefinedException(UndefinedException::ERROR_UNDEFINED_VALIDATION);
             }
         }
 
@@ -210,7 +210,7 @@ class Lexer
             return $this->EOF;
         }
 
-        throw new JsonLintException(JsonLintException::LEXICAL_ERROR, [($this->yLineNo + 1)]);
+        throw new JsonLintException(JsonLintException::ERROR_LEXICAL_ERROR, [($this->yLineNo + 1)]);
     }
 
     /**

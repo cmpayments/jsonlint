@@ -127,8 +127,8 @@ class JsonParser
     private $defaultActions = [16 => [2, 6]];
 
     /**
-     * @param  string $input JSON string
-     * @param int     $flags
+     * @param string $input JSON string
+     * @param int    $flags
      *
      * @return null|ParsingException null if no error is found, a ParsingException containing all details otherwise
      */
@@ -146,8 +146,8 @@ class JsonParser
     }
 
     /**
-     * @param     $input
-     * @param int $flags
+     * @param string $input
+     * @param int    $flags
      *
      * @return bool
      * @throws DuplicateKeyException
@@ -161,7 +161,7 @@ class JsonParser
 
         if (!is_string($input)) {
 
-            $e = new ParsingException(ParsingException::NOT_A_STRING, [gettype($input)]);
+            $e = new ParsingException(ParsingException::ERROR_NOT_A_STRING, [gettype($input)]);
 
             // we +1 the line number on which an error occurred to make it human readable
             $e->setJsonLineNo(($this->lexer->yLineNo + 1));
@@ -188,7 +188,7 @@ class JsonParser
         $symbol = $preErrorSymbol = $state = $action = $a = $r = $p = $len = $newState = $expected = $errStr = null;
         $yVal   = new stdClass;
 
-        $isMultiLine = (count(explode("\n", str_replace("\n\r", "\n", $input))) > 1) ? true : false;
+        $isMultiLine = count(explode("\n", str_replace("\n\r", "\n", $input))) > 1;
 
         while (true) {
 
@@ -232,22 +232,22 @@ class JsonParser
 
                         if (substr($this->lexer->yText, 0, 1) === "'") {
 
-                            $e = new ParsingException(ParsingException::USED_SINGLE_QUOTES, $this->getExceptionArguments($symbol));
+                            $e = new ParsingException(ParsingException::ERROR_USED_SINGLE_QUOTES, $this->getExceptionArguments($symbol));
                         } elseif (preg_match('{".+?(\\\\[^"bfnrt/\\\\u])}', $this->lexer->getUpcomingInput(), $match)) {
 
-                            $e = new ParsingException(ParsingException::UNESCAPED_BACKSLASH, array_merge([$match[1]], $this->getExceptionArguments($symbol)));
+                            $e = new ParsingException(ParsingException::ERROR_UNESCAPED_BACKSLASH, array_merge([$match[1]], $this->getExceptionArguments($symbol)));
                         } elseif (preg_match('{"(?:[^"]+|\\\\")*$}m', $this->lexer->getUpcomingInput())) {
 
-                            $e = new ParsingException(ParsingException::NOT_TERMINATED_OR_MULTI_LINE, $this->getExceptionArguments($symbol));
+                            $e = new ParsingException(ParsingException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, $this->getExceptionArguments($symbol));
                         } else {
 
-                            $e = new ParsingException(ParsingException::INVALID_STRING, $this->getExceptionArguments($symbol));
+                            $e = new ParsingException(ParsingException::ERROR_INVALID_STRING, $this->getExceptionArguments($symbol));
                         }
                     }
 
                     if (is_null($e)) {
 
-                        $e = new ParsingException(ParsingException::EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, array_merge(
+                        $e = new ParsingException(ParsingException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, array_merge(
                             [
                                 ((count($expected) > 1) ? ' one of' : ''),
                                 implode('\', \'', $expected),
@@ -258,7 +258,7 @@ class JsonParser
 
                     if (substr(trim($this->lexer->getPastInput()), -1) === ',') {
 
-                        $e->appendMessage($e->getItemFromVariableArray(ParsingException::APPEND_TRAILING_COMMA_ERROR), $this->getExceptionArguments($symbol));
+                        $e->appendMessage($e->getItemFromVariableArray(ParsingException::ERROR_APPEND_TRAILING_COMMA_ERROR), $this->getExceptionArguments($symbol));
 
                         // usually we +1 the line number on which an error occurred to make it human readable
                         // BUT when it involves a trailing comma the error is located on the line above the current one
@@ -285,7 +285,7 @@ class JsonParser
 
                         if (is_null($e)) {
 
-                            throw new ParsingException(ParsingException::PARSING_HALTED);
+                            throw new ParsingException(ParsingException::ERROR_PARSING_HALTED);
                         }
                     }
 
@@ -308,7 +308,7 @@ class JsonParser
 
                         if (is_null($e)) {
 
-                            throw new ParsingException(ParsingException::PARSING_HALTED);
+                            throw new ParsingException(ParsingException::ERROR_PARSING_HALTED);
                         }
                     }
 
@@ -326,7 +326,7 @@ class JsonParser
             // this shouldn't happen, unless resolve defaults are off
             if (is_array($action[0]) && is_array($action) && count($action) > 1) {
 
-                throw new ParsingException(ParsingException::PARSING_ERROR_MULTIPLE_ACTIONS, [$state, $symbol]);
+                throw new ParsingException(ParsingException::ERROR_PARSING_ERROR_MULTIPLE_ACTIONS, [$state, $symbol]);
             }
 
             switch ($action[0]) {
@@ -399,7 +399,7 @@ class JsonParser
     }
 
     /**
-     * @param null $symbol
+     * @param null|string $symbol
      *
      * @return array
      */
@@ -421,10 +421,10 @@ class JsonParser
 
     /**
      * @param stdClass $yVal
-     * @param          $yText
-     * @param          $yLineNo
-     * @param          $yState
-     * @param          $tokens
+     * @param string   $yText
+     * @param int      $yLineNo
+     * @param int      $yState
+     * @param array    $tokens
      *
      * @return UndefinedException
      * @throws DuplicateKeyException
@@ -508,12 +508,11 @@ class JsonParser
                     if (($this->flags & self::DETECT_KEY_CONFLICTS) && isset($tokens[$len - 2][$key])) {
 
                         $args = ['line' => ($yLineNo + 1), 'key' => $tokens[$len][0]];
-                        $e    = new DuplicateKeyException(DuplicateKeyException::PARSE_ERROR_DUPLICATE_KEY, $tokens[$len][0], $args);
+                        $e    = new DuplicateKeyException(DuplicateKeyException::ERROR_PARSE_ERROR_DUPLICATE_KEY, $tokens[$len][0], $args);
 
                         $e->setJsonLineNo($args['line']);
                         $e->setJsonMatch($args['key']);
                         $e->setJsonColumnNo($this->lexer->yColumnNo);
-
 
                         throw $e;
                     } elseif (($this->flags & self::ALLOW_DUPLICATE_KEYS) && isset($tokens[$len - 2][$key])) {
@@ -537,7 +536,7 @@ class JsonParser
                     if (($this->flags & self::DETECT_KEY_CONFLICTS) && isset($tokens[$len - 2]->{$key})) {
 
                         $args = ['line' => ($yLineNo + 1), 'key' => $tokens[$len][0]];
-                        $e    = new DuplicateKeyException(DuplicateKeyException::PARSE_ERROR_DUPLICATE_KEY, $tokens[$len][0], $args);
+                        $e    = new DuplicateKeyException(DuplicateKeyException::ERROR_PARSE_ERROR_DUPLICATE_KEY, $tokens[$len][0], $args);
 
                         $e->setJsonLineNo($args['line']);
                         $e->setJsonMatch($args['key']);
@@ -582,13 +581,13 @@ class JsonParser
                 break;
         }
 
-        return new UndefinedException(UndefinedException::UNDEFINED_VALIDATION);
+        return new UndefinedException(UndefinedException::ERROR_UNDEFINED_VALIDATION);
     }
 
     /**
      * alter $match[0] to a new value
      *
-     * @param $match
+     * @param array $match
      *
      * @return string
      */
@@ -628,7 +627,7 @@ class JsonParser
     /**
      * Returns the sequence of elements from the arrays as specified by the offset and length ($n) parameters.
      *
-     * @param $n
+     * @param int $n
      */
     private function popStack($n)
     {
@@ -656,7 +655,7 @@ class JsonParser
     /**
      * The byte order mark (BOM) is a Unicode character, which is not allowed
      *
-     * @param $input
+     * @param string $input
      *
      * @throws ParsingException
      */
@@ -667,7 +666,7 @@ class JsonParser
 
         if (substr($input, 0, 3) === $bom) {
 
-            throw new ParsingException(ParsingException::BYTE_ORDER_MARK_DETECTED);
+            throw new ParsingException(ParsingException::ERROR_BYTE_ORDER_MARK_DETECTED);
         }
     }
 }
