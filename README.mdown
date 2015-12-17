@@ -1,5 +1,4 @@
 # JSON Lint for PHP [![Build Status](https://img.shields.io/travis/cmpayments/jsonlint.svg)](https://travis-ci.org/cmpayments/jsonlint)
------------------------------------------------------------------------------------------------------------------------------------------
 
 ![License](https://img.shields.io/packagist/l/cmpayments/jsonlint.svg)
 [![Latest Stable Version](https://img.shields.io/packagist/v/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
@@ -8,7 +7,7 @@
 
 JSON Lint for PHP checks a string for invalid or malformed JSON, control character error, incorrect encoding or just plain old syntax errors.
 It returns comprehensive feedback about the first error that occured in the string.
-It support both RFC 4627 and (it's supeceding) RFC 7159
+It supports both RFC 4627 and (its supeceding) RFC 7159
 
 Usage
 -----
@@ -21,19 +20,10 @@ $parser = new JsonParser();
 // returns null if it's valid json, or a ParsingException object.
 $parser->lint($json);
 
-// Call getMessage() on the exception object to get
-// a well formatted error message error like this
+// Call $parser->getMessage() on the exception object to get a well formatted error message error like this
+// **Expected one of: 'STRING', '}' when trying to match 'id' on line 2, column 9**
 
-// Parse error on line 2:
-// ... "key": "value"    "numbers": [1, 2, 3]
-// ----------------------^
-// Expected one of: 'EOF', '}', ':', ',', ']'
-
-// Call getDetails() on the exception to get more info.
-
-// returns parsed json, like json_decode() does, but slower, throws
-// exceptions on failure.
-$parser->parse($json);
+// Call $parser->getDetails() on the exception to get more info.
 ```
 
 Installation
@@ -41,15 +31,11 @@ Installation
 
 For a quick install with Composer use:
 
-    $ composer require seld/jsonlint
+    $ composer require cmpayments/jsonlint
 
 JSON Lint can easily be used within another app if you have a
 [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md)
-autoloader, or it can be installed through [Composer](https://getcomposer.org/)
-for use as a CLI util.
-Once installed via Composer you can run the following command to lint a json file or URL:
-
-    $ bin/jsonlint file.json
+autoloader, or it can be installed through [Composer](https://getcomposer.org/).
 
 Requirements
 ------------
@@ -61,6 +47,14 @@ Submitting bugs and feature requests
 ------------------------------------
 
 Bugs and feature request are tracked on [GitHub](https://github.com/cmpayments/jsonlint/issues)
+
+Todo
+----
+
+- [ ] Add support for keys without double quotes*
+
+*RFC 4627 states that an object is an unordered collection of zero or more key/value pairs, where a key is a string and a value is a string, number, boolean, null, object, or array.
+This JSON linter tends to be more lenient towards keys without quotes in order to accept request from a JavaScript frontend.
 
 Author
 ------
@@ -75,4 +69,4 @@ JSON Lint is licensed under the MIT License - see the LICENSE file for details
 Acknowledgements
 ----------------
 
-This library is a port of both [Seldaek/jsonlint](https://github.com/Seldaek/jsonlint) and [zaach/jsonlint](https://github.com/zaach/jsonlint) librairies.
+This library is based on [Seldaek/jsonlint](https://github.com/Seldaek/jsonlint) and [zaach/jsonlint](https://github.com/zaach/jsonlint).
