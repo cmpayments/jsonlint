@@ -186,10 +186,10 @@ class Lexer
                     'last_column' => $lines ? strlen($lines[count($lines) - 1]) - 1 : $this->yLocation['last_column'] + strlen($match[0]),
                 ];
 
-                preg_match('/[a-zA-Z0-9-_]+/', $this->input, $inputMatches);
+                preg_match("/^[\"|']?(?P<match>.*?)(?:[\"|'](.*)$|$)/", explode("\n", $this->input)[0], $inputMatches);
 
                 $this->yText .= $match[0];
-                $this->match .= (empty($inputMatches) ? $match[0] : $inputMatches[0]);
+                $this->match .= (isset($inputMatches['match']) ? $inputMatches['match'] : $match[0]);
                 $this->yLength = strlen($this->yText);
                 $this->yColumnNo = $this->yLocation['last_column'];
                 $this->input   = substr($this->input, strlen($this->yText));

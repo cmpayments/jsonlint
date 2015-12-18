@@ -21,9 +21,9 @@ class ParsingException extends JsonLintException
     protected $messages = [
         self::ERROR_NOT_A_STRING                        => 'Input is not a string but is of type: \'%s\'',
         self::ERROR_INVALID_STRING                      => 'Invalid JSON on line %d at column %d',
-        self::ERROR_USED_SINGLE_QUOTES                  => 'You used single quotes instead of double quotes on line %d at column %d',
+        self::ERROR_USED_SINGLE_QUOTES                  => 'You used single quotes instead of double quotes on string \'%s\' on line %d at column %d',
         self::ERROR_UNESCAPED_BACKSLASH                 => 'You have an unescaped backslash at: \'%s\' on line %d at approximately column %d',
-        self::ERROR_NOT_TERMINATED_OR_MULTI_LINE        => 'You forgot to terminated the string, or attempted to write a multi line string which is invalid on line %d at column %d',
+        self::ERROR_NOT_TERMINATED_OR_MULTI_LINE        => 'You forgot to terminated the string \'%s\' on line %d at column %d (or attempted to write a multi line string which is also invalid).',
         self::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE => 'Expected%s: \'%s\' when trying to match \'%s\' on line %d, column %d',
         self::ERROR_APPEND_TRAILING_COMMA_ERROR         => '. It appears you have an extra trailing comma',
         self::ERROR_PARSING_HALTED                      => 'Parsing halted.',

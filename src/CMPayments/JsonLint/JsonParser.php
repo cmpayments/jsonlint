@@ -232,13 +232,13 @@ class JsonParser
 
                         if (substr($this->lexer->yText, 0, 1) === "'") {
 
-                            $e = new ParsingException(ParsingException::ERROR_USED_SINGLE_QUOTES, $this->getExceptionArguments($symbol));
-                        } elseif (preg_match('{".+?(\\\\[^"bfnrt/\\\\u])}', $this->lexer->getUpcomingInput(), $match)) {
+                            $e = new ParsingException(ParsingException::ERROR_USED_SINGLE_QUOTES, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
+                        } elseif (preg_match('{".+?(\\\\[^"bfnrt/\\\\u])}', $this->lexer->getUpcomingInput())) {
 
-                            $e = new ParsingException(ParsingException::ERROR_UNESCAPED_BACKSLASH, array_merge([$match[1]], $this->getExceptionArguments($symbol)));
+                            $e = new ParsingException(ParsingException::ERROR_UNESCAPED_BACKSLASH, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
                         } elseif (preg_match('{"(?:[^"]+|\\\\")*$}m', $this->lexer->getUpcomingInput())) {
 
-                            $e = new ParsingException(ParsingException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, $this->getExceptionArguments($symbol));
+                            $e = new ParsingException(ParsingException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
                         } else {
 
                             $e = new ParsingException(ParsingException::ERROR_INVALID_STRING, $this->getExceptionArguments($symbol));
