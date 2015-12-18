@@ -16,31 +16,53 @@ Usage
 use CMPayments\JsonLint\JsonParser;
 
 $parser = new JsonParser();
-    
+
+// example JSON
+$json = '{
+    "id": 2,
+    "name": "JSON Parser test",
+    \'dimensions\': {
+        "length": 7.0,
+        "width": 12.0,
+        "height": 9.5
+    }
+}';
+
 // returns null if it's valid json, or a ParsingException object.
 $parser->lint($json);
 
-// Call $parser->getMessage() on the exception object to get a well formatted error message error like this
-// **Expected one of: 'STRING', '}' when trying to match 'id' on line 2, column 9**
+// Call $parser->getMessage() on the ParsingException object to get a well formatted error message error like this:
+// You used single quotes instead of double quotes on string 'dimensions' on line 4 at column 9. It appears you have an extra trailing comma
 
 // Call $parser->getDetails() on the exception to get more info.
+$parser->getDetails();
+
+// $parser->getDetails() returns;
+array (size=6)
+  'errorCode' => int 3
+  'match' => string 'dimensions' (length=10)
+  'token' => string 'INVALID' (length=7)
+  'line' => int 3
+  'column' => int 9
+  'expected' =>
+    array (size=1)
+      0 => string 'STRING' (length=6)
 ```
 
 Installation
 ------------
-
 For a quick install with Composer use:
 
     $ composer require cmpayments/jsonlint
 
-JSON Lint can easily be used within another app if you have a
+JSON Lint for PHP can easily be used within another app if you have a
 [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md)
 autoloader, or it can be installed through [Composer](https://getcomposer.org/).
 
 Requirements
 ------------
 
-- PHP 5.3+
+- PHP 5.4+
 - [optional] PHPUnit 3.5+ to execute the test suite (phpunit --version)
 
 Submitting bugs and feature requests

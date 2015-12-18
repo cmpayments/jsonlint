@@ -153,14 +153,15 @@ class JsonLintException extends \ErrorException
     /**
      * @return array
      */
-    public function getAllJsonDetails()
+    public function getDetails()
     {
         return [
-            'match'    => $this->getJsonMatch(),
-            'token'    => $this->getJsonToken(),
-            'line'     => $this->getJsonLineNo(),
-            'column'   => $this->getJsonColumnNo(),
-            'expected' => $this->getJsonExpected()
+            'errorCode' => $this->getCode(),
+            'match'     => $this->getJsonMatch(),
+            'token'     => $this->getJsonToken(),
+            'line'      => $this->getJsonLineNo(),
+            'column'    => $this->getJsonColumnNo(),
+            'expected'  => $this->getJsonExpected()
         ];
     }
 
