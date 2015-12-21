@@ -6,7 +6,7 @@
 [![Reference Status](https://www.versioneye.com/php/cmpayments:jsonlint/reference_badge.svg)](https://www.versioneye.com/php/cmpayments:jsonlint/references)
 
 JSON Lint for PHP checks a string for invalid or malformed JSON, control character error, incorrect encoding or just plain old syntax errors.
-It returns comprehensive feedback about the first error that occured in the string.
+It returns comprehensive feedback in a one-line error message (message especially meant for APIs) about the first error that occured in the (JSON) string.
 It supports both RFC 4627 and (its supeceding) RFC 7159
 
 Usage
