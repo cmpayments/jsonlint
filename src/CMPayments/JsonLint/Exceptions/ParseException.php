@@ -1,11 +1,11 @@
 <?php namespace CMPayments\JsonLint\Exceptions;
 
 /**
- * Class ParsingException
+ * Class ParseException
  *
  * @package CMPayments\JsonLint\Exceptions
  */
-class ParsingException extends JsonLintException
+class ParseException extends JsonLintException
 {
     const ERROR_NOT_A_STRING                        = 1;
     const ERROR_INVALID_STRING                      = 2;

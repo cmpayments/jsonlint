@@ -1,13 +1,13 @@
 <?php
 
-use CMPayments\JsonLint\JsonParser;
-use CMPayments\JsonLint\Exceptions\ParsingException;
+use CMPayments\JsonLint\JsonLinter;
+use CMPayments\JsonLint\Exceptions\ParseException;
 use CMPayments\JsonLint\Exceptions\DuplicateKeyException;
 
 /**
- * Class JsonParserTest
+ * Class JsonLinterTest
  */
-class JsonParserTest extends PHPUnit_Framework_TestCase
+class JsonLintTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var array
@@ -74,7 +74,7 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testParsesValidStrings($input)
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         $this->assertEquals(json_decode($input), $parser->parse($input));
     }
 
@@ -121,14 +121,14 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testInValidString($input)
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
 
             $parser->parse($input);
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, $e->getCode(), 'Invalid string should be detected');
+            $this->assertEquals(ParseException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, $e->getCode(), 'Invalid string should be detected');
         }
     }
 
@@ -137,14 +137,14 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testOtherStringValues($input)
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
 
             $parser->parse($input);
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_NOT_A_STRING, $e->getCode(), 'Invalid type should be detected');
+            $this->assertEquals(ParseException::ERROR_NOT_A_STRING, $e->getCode(), 'Invalid type should be detected');
         }
     }
 
@@ -153,14 +153,14 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testObjectInsteadOfString()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
 
             $parser->parse(new stdClass());
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_NOT_A_STRING, $e->getCode(), 'Invalid type should be detected, becuase an object was given');
+            $this->assertEquals(ParseException::ERROR_NOT_A_STRING, $e->getCode(), 'Invalid type should be detected, becuase an object was given');
         }
     }
 
@@ -169,27 +169,27 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testErrorOnTrailingComma_1()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
             $parser->parse('{"foo":"bar",}');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertContains($e->getItemFromVariableArray(ParsingException::ERROR_APPEND_TRAILING_COMMA_ERROR), $e->getMessage(), 'Invalid trailing comma should be detected');
+            $this->assertContains($e->getItemFromVariableArray(ParseException::ERROR_APPEND_TRAILING_COMMA_ERROR), $e->getMessage(), 'Invalid trailing comma should be detected');
         }
     }
 
     public function testErrorOnTrailingComma_2()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
             $parser->parse('{
     "foo":"bar",
 }');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(2, $e->getJsonLineNo());
-            $this->assertContains($e->getItemFromVariableArray(ParsingException::ERROR_APPEND_TRAILING_COMMA_ERROR), $e->getMessage(), 'Invalid trailing comma should be detected');
+            $this->assertContains($e->getItemFromVariableArray(ParseException::ERROR_APPEND_TRAILING_COMMA_ERROR), $e->getMessage(), 'Invalid trailing comma should be detected');
         }
     }
 
@@ -198,15 +198,15 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testErrorOnInvalidQuotes()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
             $parser->parse('{
     "foo": \'bar\',
 }');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(2, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_USED_SINGLE_QUOTES, $e->getCode(), 'Invalid quotes for string should be detected');
+            $this->assertEquals(ParseException::ERROR_USED_SINGLE_QUOTES, $e->getCode(), 'Invalid quotes for string should be detected');
         }
     }
 
@@ -215,16 +215,16 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testErrorOnUnescapedBackslash()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
 
             $parser->parse('{
     "foo": "bar\z",
 }');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(2, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_UNESCAPED_BACKSLASH, $e->getCode(), 'Invalid unescaped string should be detected');
+            $this->assertEquals(ParseException::ERROR_UNESCAPED_BACKSLASH, $e->getCode(), 'Invalid unescaped string should be detected');
         }
     }
 
@@ -233,14 +233,14 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testErrorOnUnterminatedString()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
 
             $parser->parse('{"bar": "foo}');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, $e->getCode(), 'Invalid unterminated string should be detected');
+            $this->assertEquals(ParseException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, $e->getCode(), 'Invalid unterminated string should be detected');
         }
     }
 
@@ -249,14 +249,14 @@ class JsonParserTest extends PHPUnit_Framework_TestCase
      */
     public function testErrorOnMultilineString()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
             $parser->parse('{"bar": "foo
 bar"}');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, $e->getCode(), 'Invalid multi-line string should be detected');
+            $this->assertEquals(ParseException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, $e->getCode(), 'Invalid multi-line string should be detected');
         }
     }
 
@@ -265,26 +265,26 @@ bar"}');
      */
     public function testErrorAtBeginning()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         try {
 
             $parser->parse('
 
 ');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
             $this->assertEquals(3, $e->getJsonLineNo());
-            $this->assertEquals(ParsingException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, $e->getCode(), 'Empty string should be invalid');
+            $this->assertEquals(ParseException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, $e->getCode(), 'Empty string should be invalid');
         }
     }
 
     /**
-     * @throws ParsingException
+     * @throws ParseException
      * @throws null
      */
     public function testParsesMultiInARow()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
         foreach ($this->valid as $input) {
 
             $this->assertEquals(json_decode($input), $parser->parse($input));
@@ -292,15 +292,15 @@ bar"}');
     }
 
     /**
-     * @throws ParsingException
+     * @throws ParseException
      */
     public function testDetectsKeyOverrides()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
 
         try {
 
-            $parser->parse('{"a":"b", "a":"c"}', JsonParser::DETECT_KEY_CONFLICTS);
+            $parser->parse('{"a":"b", "a":"c"}', JsonLinter::DETECT_KEY_CONFLICTS);
         } catch (DuplicateKeyException $e) {
 
             $this->assertEquals(1, $e->getJsonLineNo());
@@ -311,18 +311,18 @@ bar"}');
     }
 
     /**
-     * @throws ParsingException
+     * @throws ParseException
      */
     public function testDetectsKeyOverridesWithEmpty()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
 
         try {
 
             $parser->parse('{
     "":"b",
     "_empty_":"a"
-}', JsonParser::DETECT_KEY_CONFLICTS);
+}', JsonLinter::DETECT_KEY_CONFLICTS);
         } catch (DuplicateKeyException $e) {
 
             $this->assertEquals(3, $e->getJsonLineNo());
@@ -333,13 +333,13 @@ bar"}');
     }
 
     /**
-     * @throws ParsingException
+     * @throws ParseException
      */
     public function testDuplicateKeys()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
 
-        $result = $parser->parse('{"a":"b", "a":"c", "a":"d"}', JsonParser::ALLOW_DUPLICATE_KEYS);
+        $result = $parser->parse('{"a":"b", "a":"c", "a":"d"}', JsonLinter::ALLOW_DUPLICATE_KEYS);
         $this->assertThat($result,
                           $this->logicalAnd(
                               $this->objectHasAttribute('a'),
@@ -350,13 +350,13 @@ bar"}');
     }
 
     /**
-     * @throws ParsingException
+     * @throws ParseException
      */
     public function testDuplicateKeysWithEmpty()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
 
-        $result = $parser->parse('{"":"a", "_empty_":"b"}', JsonParser::ALLOW_DUPLICATE_KEYS);
+        $result = $parser->parse('{"":"a", "_empty_":"b"}', JsonLinter::ALLOW_DUPLICATE_KEYS);
         $this->assertThat($result,
                           $this->logicalAnd(
                               $this->objectHasAttribute('_empty_'),
@@ -366,14 +366,14 @@ bar"}');
     }
 
     /**
-     * @throws ParsingException
+     * @throws ParseException
      */
     public function testParseToArray()
     {
-        $parser = new JsonParser();
+        $parser = new JsonLinter();
 
         $json   = '{"one":"a", "two":{"three": "four"}, "": "empty"}';
-        $result = $parser->parse($json, JsonParser::PARSE_TO_ASSOC);
+        $result = $parser->parse($json, JsonLinter::PARSE_TO_ASSOC);
         $this->assertEquals(json_decode($json, true), $result);
     }
 
@@ -383,12 +383,12 @@ bar"}');
     public function testFileWithBOM()
     {
         try {
-            $parser = new JsonParser();
+            $parser = new JsonLinter();
             $parser->parse(file_get_contents(dirname(__FILE__) . '/bom.json'));
             $this->fail('BOM should be detected');
-        } catch (ParsingException $e) {
+        } catch (ParseException $e) {
 
-            $this->assertEquals(ParsingException::ERROR_BYTE_ORDER_MARK_DETECTED, $e->getCode());
+            $this->assertEquals(ParseException::ERROR_BYTE_ORDER_MARK_DETECTED, $e->getCode());
         }
     }
 }

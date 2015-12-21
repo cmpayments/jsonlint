@@ -1,7 +1,7 @@
 <?php namespace CMPayments\JsonLint;
 
 use CMPayments\JsonLint\Exceptions\DuplicateKeyException;
-use CMPayments\JsonLint\Exceptions\ParsingException;
+use CMPayments\JsonLint\Exceptions\ParseException;
 use CMPayments\JsonLint\Exceptions\UndefinedException;
 use stdClass;
 
@@ -10,7 +10,7 @@ use stdClass;
  *
  * @package CMPayments\JsonLint
  */
-class JsonParser
+class JsonLinter
 {
     const DETECT_KEY_CONFLICTS = 1;
     const ALLOW_DUPLICATE_KEYS = 2;
@@ -130,7 +130,7 @@ class JsonParser
      * @param string $input JSON string
      * @param int    $flags
      *
-     * @return null|ParsingException null if no error is found, a ParsingException containing all details otherwise
+     * @return null|ParseException null if no error is found, a ParseException containing all details otherwise
      */
     public function lint($input, $flags = 0)
     {
@@ -151,7 +151,7 @@ class JsonParser
      *
      * @return bool
      * @throws DuplicateKeyException
-     * @throws ParsingException
+     * @throws ParseException
      * @throws null
      */
     public function parse($input, $flags = 0)
@@ -161,7 +161,7 @@ class JsonParser
 
         if (!is_string($input)) {
 
-            $e = new ParsingException(ParsingException::ERROR_NOT_A_STRING, [gettype($input)]);
+            $e = new ParseException(ParseException::ERROR_NOT_A_STRING, [gettype($input)]);
 
             // we +1 the line number on which an error occurred to make it human readable
             $e->setJsonLineNo(($this->lexer->yLineNo + 1));
@@ -232,22 +232,22 @@ class JsonParser
 
                         if (substr($this->lexer->yText, 0, 1) === "'") {
 
-                            $e = new ParsingException(ParsingException::ERROR_USED_SINGLE_QUOTES, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
+                            $e = new ParseException(ParseException::ERROR_USED_SINGLE_QUOTES, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
                         } elseif (preg_match('{".+?(\\\\[^"bfnrt/\\\\u])}', $this->lexer->getUpcomingInput())) {
 
-                            $e = new ParsingException(ParsingException::ERROR_UNESCAPED_BACKSLASH, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
+                            $e = new ParseException(ParseException::ERROR_UNESCAPED_BACKSLASH, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
                         } elseif (preg_match('{"(?:[^"]+|\\\\")*$}m', $this->lexer->getUpcomingInput())) {
 
-                            $e = new ParsingException(ParsingException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
+                            $e = new ParseException(ParseException::ERROR_NOT_TERMINATED_OR_MULTI_LINE, array_merge(['match' => $this->lexer->match], $this->getExceptionArguments($symbol)));
                         } else {
 
-                            $e = new ParsingException(ParsingException::ERROR_INVALID_STRING, $this->getExceptionArguments($symbol));
+                            $e = new ParseException(ParseException::ERROR_INVALID_STRING, $this->getExceptionArguments($symbol));
                         }
                     }
 
                     if (is_null($e)) {
 
-                        $e = new ParsingException(ParsingException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, array_merge(
+                        $e = new ParseException(ParseException::ERROR_EXPECTED_INPUT_TO_BE_SOMETHING_ELSE, array_merge(
                             [
                                 ((count($expected) > 1) ? ' one of' : ''),
                                 implode('\', \'', $expected),
@@ -258,7 +258,7 @@ class JsonParser
 
                     if (substr(trim($this->lexer->getPastInput()), -1) === ',') {
 
-                        $e->appendMessage($e->getItemFromVariableArray(ParsingException::ERROR_APPEND_TRAILING_COMMA_ERROR), $this->getExceptionArguments($symbol));
+                        $e->appendMessage($e->getItemFromVariableArray(ParseException::ERROR_APPEND_TRAILING_COMMA_ERROR), $this->getExceptionArguments($symbol));
 
                         // usually we +1 the line number on which an error occurred to make it human readable
                         // BUT when it involves a trailing comma the error is located on the line above the current one
@@ -285,7 +285,7 @@ class JsonParser
 
                         if (is_null($e)) {
 
-                            throw new ParsingException(ParsingException::ERROR_PARSING_HALTED);
+                            throw new ParseException(ParseException::ERROR_PARSING_HALTED);
                         }
                     }
 
@@ -308,7 +308,7 @@ class JsonParser
 
                         if (is_null($e)) {
 
-                            throw new ParsingException(ParsingException::ERROR_PARSING_HALTED);
+                            throw new ParseException(ParseException::ERROR_PARSING_HALTED);
                         }
                     }
 
@@ -326,7 +326,7 @@ class JsonParser
             // this shouldn't happen, unless resolve defaults are off
             if (is_array($action[0]) && is_array($action) && count($action) > 1) {
 
-                throw new ParsingException(ParsingException::ERROR_PARSING_ERROR_MULTIPLE_ACTIONS, [$state, $symbol]);
+                throw new ParseException(ParseException::ERROR_PARSING_ERROR_MULTIPLE_ACTIONS, [$state, $symbol]);
             }
 
             switch ($action[0]) {
@@ -657,7 +657,7 @@ class JsonParser
      *
      * @param string $input
      *
-     * @throws ParsingException
+     * @throws ParseException
      */
     private function failOnBOM($input)
     {
@@ -666,7 +666,7 @@ class JsonParser
 
         if (substr($input, 0, 3) === $bom) {
 
-            throw new ParsingException(ParsingException::ERROR_BYTE_ORDER_MARK_DETECTED);
+            throw new ParseException(ParseException::ERROR_BYTE_ORDER_MARK_DETECTED);
         }
     }
 }
