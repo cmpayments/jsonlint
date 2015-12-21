@@ -29,15 +29,15 @@ $json = '{
 }';
 
 // returns null if it's valid json, or a ParseException object.
-$linter->lint($json);
+$result = $linter->lint($json);
 
-// Call $linter->getMessage() on the ParseException object to get a well formatted error message error like this:
+// Call $result->getMessage() on the ParseException object to get a well formatted error message error like this:
 // You used single quotes instead of double quotes on string 'dimensions' on line 4 at column 9. It appears you have an extra trailing comma
 
-// Call $linter->getDetails() on the exception to get more info.
-$linter->getDetails();
+// Call $result->getDetails() on the exception to get more info.
+$result->getDetails();
 
-// $linter->getDetails() returns;
+// $result->getDetails() returns;
 array (size=6)
   'errorCode' => int 3
   'match' => string 'dimensions' (length=10)
