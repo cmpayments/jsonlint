@@ -28,10 +28,10 @@ $json = '{
     }
 }';
 
-// returns null if it's valid json, or a ParsingException object.
+// returns null if it's valid json, or a ParseException object.
 $parser->lint($json);
 
-// Call $parser->getMessage() on the ParsingException object to get a well formatted error message error like this:
+// Call $parser->getMessage() on the ParseException object to get a well formatted error message error like this:
 // You used single quotes instead of double quotes on string 'dimensions' on line 4 at column 9. It appears you have an extra trailing comma
 
 // Call $parser->getDetails() on the exception to get more info.
