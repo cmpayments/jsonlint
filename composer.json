@@ -1,7 +1,7 @@
 {
     "name": "cmpayments/jsonlint",
-    "description": "JSON Lint for PHP checks a string for invalid or malformed JSON, control character error, incorrect encoding or just plain old syntax errors. It returns comprehensive feedback in a one-line error message (message especially meant for APIs) about the first error that occurred in the (JSON) string. It supports both RFC 4627 and (its supeceding) RFC 7159",
-    "keywords": ["json", "php", "parser", "lint", "linter", "validator", "syntax check"],
+    "description": "JSON Lint for PHP checks a string for invalid or malformed JSON, control character error, incorrect encoding or just plain old syntax errors. It returns comprehensive feedback in a one-line error message (one-line message especially meant for REST APIs) about the first error that occurred in the (JSON) string. It supports both RFC 4627 and (its superseding) RFC 7159.",
+    "keywords": ["json", "php", "parser", "lint", "linter", "validator", "syntax", "syntaxcheck"],
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/cmpayments/jsonlint",
