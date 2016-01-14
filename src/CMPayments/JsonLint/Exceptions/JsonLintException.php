@@ -95,7 +95,7 @@ class JsonLintException extends \ErrorException
     }
 
     /**
-     * @param null $jsonColumnNo
+     * @param integer $jsonColumnNo
      */
     public function setJsonColumnNo($jsonColumnNo)
     {
@@ -168,7 +168,7 @@ class JsonLintException extends \ErrorException
     /**
      * Append the current message with some more text
      *
-     * @param $appendingText
+     * @param string|null $appendingText
      */
     public function appendMessage($appendingText)
     {
@@ -194,7 +194,7 @@ class JsonLintException extends \ErrorException
      * Retrieves a specific array key from a class constant
      *
      * @param int    $code
-     * @param null   $default
+     * @param string $default
      * @param string $msgArray
      *
      * @return null|string
