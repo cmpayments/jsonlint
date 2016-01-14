@@ -2,6 +2,7 @@
 
 ![License](https://img.shields.io/packagist/l/cmpayments/jsonlint.svg)
 [![Latest Stable Version](https://img.shields.io/packagist/v/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/cmpayments/jsonlint.svg)](https://scrutinizer-ci.com/g/cmpayments/jsonlint/code-structure)
 [![Total Downloads](https://img.shields.io/packagist/dt/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
 [![Reference Status](https://www.versioneye.com/php/cmpayments:jsonlint/reference_badge.svg)](https://www.versioneye.com/php/cmpayments:jsonlint/references)
 
