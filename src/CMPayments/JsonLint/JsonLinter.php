@@ -506,7 +506,7 @@ class JsonLinter
             case 17:
                 if ($this->flags & self::PARSE_TO_ASSOC) {
 
-                    $yVal->token =& $tokens[$len - 2];
+                    $yVal->token = & $tokens[$len - 2];
                     $key         = $tokens[$len][0];
 
                     if (($this->flags & self::DETECT_KEY_CONFLICTS) && isset($tokens[$len - 2][$key])) {
