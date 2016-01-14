@@ -162,7 +162,7 @@ class Lexer
             $this->done = true;
         }
 
-        $match = $col = $lines = null;
+        $match = $lines = null;
 
         $this->yText = $this->match = '';
 

@@ -76,7 +76,7 @@ class JsonLinter
     /**
      * @var array
      */
-    private $terminals = [2 => "error", 4 => "STRING", 6 => "NUMBER", 8 => "NULL", 10 => "TRUE", 11 => "FALSE", 14 => "EOF", 17 => "{", 18 => "}", 21 => ":", 22 => ",", 23 => "[", 24 => "]",];
+    private $terminals = [2 => "error", 4 => "STRING", 6 => "NUMBER", 8 => "NULL", 10 => "TRUE", 11 => "FALSE", 14 => "EOF", 17 => "{", 18 => "}", 21 => ":", 22 => ",", 23 => "[", 24 => "]"];
 
     /**
      * @var array
@@ -130,19 +130,17 @@ class JsonLinter
      * @param string $input JSON string
      * @param int    $flags
      *
-     * @return null|ParseException null if no error is found, a ParseException containing all details otherwise
+     * @return boolean|ParseException null if no error is found, a ParseException containing all details otherwise
      */
     public function lint($input, $flags = 0)
     {
         try {
 
             return $this->parse($input, $flags);
-        } catch (\Exception $e) { // catch (any) Exception
+        } catch (\Exception $e) {
 
             return $e;
         }
-
-        return null;
     }
 
     /**
@@ -185,7 +183,7 @@ class JsonLinter
         $yLocation      = $this->lexer->yLocation;
         $this->lStack[] = $yLocation;
 
-        $symbol = $preErrorSymbol = $state = $action = $a = $r = $p = $len = $newState = $expected = $errStr = null;
+        $symbol = $preErrorSymbol = $p = null;
         $yVal   = new stdClass;
 
         $isMultiLine = count(explode("\n", str_replace("\n\r", "\n", $input))) > 1;
@@ -201,7 +199,7 @@ class JsonLinter
                 $action = $this->defaultActions[$state];
             } else {
 
-                if ($symbol == null) {
+                if ($symbol === null) {
 
                     $symbol = $this->lex();
                 }
@@ -258,7 +256,7 @@ class JsonLinter
 
                     if (substr(trim($this->lexer->getPastInput()), -1) === ',') {
 
-                        $e->appendMessage($e->getItemFromVariableArray(ParseException::ERROR_APPEND_TRAILING_COMMA_ERROR), $this->getExceptionArguments($symbol));
+                        $e->appendMessage($e->getItemFromVariableArray(ParseException::ERROR_APPEND_TRAILING_COMMA_ERROR));
 
                         // usually we +1 the line number on which an error occurred to make it human readable
                         // BUT when it involves a trailing comma the error is located on the line above the current one
@@ -316,11 +314,16 @@ class JsonLinter
                     $state = $this->stack[count($this->stack) - 1];
                 }
 
-                $preErrorSymbol = $symbol; // save the lookahead token
-                $symbol         = $terror;         // insert generic error symbol as new lookahead
-                $state          = $this->stack[count($this->stack) - 1];
-                $action         = isset($this->table[$state][$terror]) ? $this->table[$state][$terror] : false;
-                $recovering     = 3; // allow 3 real symbols to be shifted before reporting a new error
+                // save the lookahead token
+                $preErrorSymbol = $symbol;
+
+                // insert generic error symbol as new lookahead
+                $symbol = $terror;
+
+                // allow 3 real symbols to be shifted before reporting a new error
+                $recovering = 3;
+                $state      = $this->stack[count($this->stack) - 1];
+                $action     = isset($this->table[$state][$terror]) ? $this->table[$state][$terror] : false;
             }
 
             // this shouldn't happen, unless resolve defaults are off
@@ -339,7 +342,8 @@ class JsonLinter
                     $this->stack[]  = $action[1]; // push state
                     $symbol         = null;
 
-                    if (!$preErrorSymbol) { // normal execution/no error
+                    // normal execution/no error
+                    if ($preErrorSymbol === null) {
 
                         $yText   = $this->lexer->yText;
                         $yLineNo = $this->lexer->yLineNo;
@@ -361,7 +365,7 @@ class JsonLinter
                     $len = $this->productions[$action[1]][1];
 
                     // perform semantic action
-                    $yVal->token = $this->vStack[count($this->vStack) - $len]; // default to $$ = $1
+                    $yVal->token = $this->vStack[count($this->vStack) - $len];
 
                     // default location, uses first token for firsts, last for lasts
                     $yVal->store = [
@@ -381,7 +385,8 @@ class JsonLinter
                         $this->popStack($len);
                     }
 
-                    $this->stack[]  = $this->productions[$action[1]][0]; // push non terminal (reduce)
+                    // push non terminal (reduce)
+                    $this->stack[]  = $this->productions[$action[1]][0];
                     $this->vStack[] = $yVal->token;
                     $this->lStack[] = $yVal->store;
                     $newState       = $this->table[$this->stack[count($this->stack) - 2]][$this->stack[count($this->stack) - 1]];
@@ -431,7 +436,6 @@ class JsonLinter
      */
     private function performAction(stdClass $yVal, $yText, $yLineNo, $yState, &$tokens)
     {
-        // $0 = $len
         $len = count($tokens) - 1;
 
         switch ($yState) {
