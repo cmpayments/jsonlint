@@ -71,6 +71,11 @@ class JsonLintTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideValidStrings
+
+     * @param $input
+     *
+     * @throws ParseException
+     * @throws null
      */
     public function testParsesValidStrings($input)
     {
