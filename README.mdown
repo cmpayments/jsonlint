@@ -2,6 +2,7 @@
 
 ![License](https://img.shields.io/packagist/l/cmpayments/jsonlint.svg)
 [![Latest Stable Version](https://img.shields.io/packagist/v/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cmpayments/jsonlint/badges/quality-score.png)](https://scrutinizer-ci.com/g/cmpayments/jsonlint/)
 [![Total Downloads](https://img.shields.io/packagist/dt/cmpayments/jsonlint.svg)](https://packagist.org/packages/cmpayments/jsonlint)
 [![Reference Status](https://www.versioneye.com/php/cmpayments:jsonlint/reference_badge.svg)](https://www.versioneye.com/php/cmpayments:jsonlint/references)
 
@@ -12,7 +13,7 @@ It supports both RFC 4627 and (its superseding) RFC 7159.
 Usage
 -----
 
-```php2
+```php
 use CMPayments\JsonLint\JsonLinter;
 
 $linter = new JsonLinter();
