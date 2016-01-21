@@ -136,11 +136,13 @@ class JsonLinter
     {
         try {
 
-            return $this->parse($input, $flags);
+            $this->parse($input, $flags);
         } catch (\Exception $e) {
 
             return $e;
         }
+
+        return null;
     }
 
     /**
