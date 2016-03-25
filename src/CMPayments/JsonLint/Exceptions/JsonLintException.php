@@ -221,8 +221,8 @@ class JsonLintException extends \ErrorException
      *
      * @return string
      */
-    static public function getClassName(){
-
-        return __CLASS__;
+    static public function getClassName()
+    {
+        return get_called_class();
     }
 }
