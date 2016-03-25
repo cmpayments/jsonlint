@@ -215,4 +215,14 @@ class JsonLintException extends \ErrorException
 
         return $default;
     }
+
+    /**
+     * PHP 5.4 workaround for something like this ClassA::class (which is invalid in PHP5.4)
+     *
+     * @return string
+     */
+    static public function getClassName(){
+
+        return __CLASS__;
+    }
 }
